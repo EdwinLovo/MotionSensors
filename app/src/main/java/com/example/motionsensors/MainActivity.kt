@@ -5,11 +5,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.motionsensors.Sensors.Accelerometer
 import com.example.motionsensors.Sensors.Gyroscope
+import com.example.motionsensors.Sensors.Proximity
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var accelerometer: Accelerometer
     private lateinit var gyroscope: Gyroscope
+    private lateinit var proximity: Proximity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         accelerometer = Accelerometer(this)
         gyroscope = Gyroscope(this)
+        proximity = Proximity(this)
 
         accelerometer.setListener( object : Accelerometer.Listener{
             override fun onTranslation(tx: Float, ty: Float, tz: Float) {
@@ -37,6 +41,30 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+        proximity.setListener(object : Proximity.Listener{
+            override fun onProximity(cm: Float) {
+                textView2.text = cm.toString()
+                when (cm) {
+                    in 0.0f..1.0f -> {
+                        textView.text = "Muy Cerca"
+                        textView.setTextColor(Color.RED)
+                    }
+                    in 1.1f..5.0f -> {
+                        textView.text = "Cerca"
+                        textView.setTextColor(Color.GREEN)
+                    }
+                    in 5.1f..9.0f -> {
+                        textView.text = "Lejos"
+                        textView.setTextColor(Color.MAGENTA)
+                    }
+                    in 9.1f..10.0f -> {
+                        textView.text = "Muy Lejos"
+                        textView.setTextColor(Color.BLUE)
+                    }
+                }
+            }
+        })
     }
 
     override fun onResume() {
@@ -44,6 +72,8 @@ class MainActivity : AppCompatActivity() {
 
         accelerometer.register()
         gyroscope.register()
+        proximity.register()
+
     }
 
     override fun onPause() {
@@ -51,6 +81,9 @@ class MainActivity : AppCompatActivity() {
 
         accelerometer.unregister()
         gyroscope.unregister()
+        proximity.unregister()
     }
 
 }
+
+
