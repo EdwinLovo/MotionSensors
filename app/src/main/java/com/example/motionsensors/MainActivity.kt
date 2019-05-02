@@ -15,7 +15,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var accelerometer: Accelerometer
     private lateinit var gyroscope: Gyroscope
     private lateinit var proximity: Proximity
-    private lateinit var magnetometer: Magnetometer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,21 +23,7 @@ class MainActivity : AppCompatActivity() {
         accelerometer = Accelerometer(this)
         gyroscope = Gyroscope(this)
         proximity = Proximity(this)
-        magnetometer = Magnetometer(this)
 
-        magnetometer.setListener(object: Magnetometer.Listener{
-            override fun onTranslation(mx: Float, my: Float, mz: Float) {
-                //Log.d("Mag", "mx" + mx.toString())
-                //Log.d("Mag", "my" + my.toString())
-                Log.d("Mag", "mz" + mz.toString())
-
-                if(my > 9.6f){
-                    textView3.text = "Dispositivo expuesto"
-                }else if(my < -9.6f){
-                    textView3.text = "Dispositivo volteado"
-                }
-            }
-        })
 
         accelerometer.setListener( object : Accelerometer.Listener{
             override fun onTranslation(tx: Float, ty: Float, tz: Float) {
@@ -46,6 +31,12 @@ class MainActivity : AppCompatActivity() {
                     window.decorView.setBackgroundColor(Color.CYAN)
                 } else if (tx < -1.0f){
                     window.decorView.setBackgroundColor(Color.RED)
+                }
+
+                if(tz > 9 && tz < 10){
+                    textView3.text = "Pantalla hacia arriba"
+                }else if(tz > -10 && tz < -9){
+                    textView3.text = "Pantalla hacia abajo"
                 }
 
             }
@@ -92,7 +83,6 @@ class MainActivity : AppCompatActivity() {
         accelerometer.register()
         gyroscope.register()
         proximity.register()
-        magnetometer.register()
 
     }
 
@@ -102,7 +92,6 @@ class MainActivity : AppCompatActivity() {
         accelerometer.unregister()
         gyroscope.unregister()
         proximity.unregister()
-        magnetometer.unregister()
 
     }
 
