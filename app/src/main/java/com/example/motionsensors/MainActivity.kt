@@ -3,8 +3,10 @@ package com.example.motionsensors
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.example.motionsensors.Sensors.Accelerometer
 import com.example.motionsensors.Sensors.Gyroscope
+import com.example.motionsensors.Sensors.Magnetometer
 import com.example.motionsensors.Sensors.Proximity
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -13,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var accelerometer: Accelerometer
     private lateinit var gyroscope: Gyroscope
     private lateinit var proximity: Proximity
+    private lateinit var magnetometer: Magnetometer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +24,21 @@ class MainActivity : AppCompatActivity() {
         accelerometer = Accelerometer(this)
         gyroscope = Gyroscope(this)
         proximity = Proximity(this)
+        magnetometer = Magnetometer(this)
+
+        magnetometer.setListener(object: Magnetometer.Listener{
+            override fun onTranslation(mx: Float, my: Float, mz: Float) {
+                //Log.d("Mag", "mx" + mx.toString())
+                //Log.d("Mag", "my" + my.toString())
+                Log.d("Mag", "mz" + mz.toString())
+
+                if(my > 9.6f){
+                    textView3.text = "Dispositivo expuesto"
+                }else if(my < -9.6f){
+                    textView3.text = "Dispositivo volteado"
+                }
+            }
+        })
 
         accelerometer.setListener( object : Accelerometer.Listener{
             override fun onTranslation(tx: Float, ty: Float, tz: Float) {
@@ -29,6 +47,7 @@ class MainActivity : AppCompatActivity() {
                 } else if (tx < -1.0f){
                     window.decorView.setBackgroundColor(Color.RED)
                 }
+
             }
         })
 
@@ -73,6 +92,7 @@ class MainActivity : AppCompatActivity() {
         accelerometer.register()
         gyroscope.register()
         proximity.register()
+        magnetometer.register()
 
     }
 
@@ -82,6 +102,8 @@ class MainActivity : AppCompatActivity() {
         accelerometer.unregister()
         gyroscope.unregister()
         proximity.unregister()
+        magnetometer.unregister()
+
     }
 
 }
